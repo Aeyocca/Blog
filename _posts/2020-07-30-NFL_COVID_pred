@@ -1,4 +1,5 @@
 # NFL Covid Prediction
+#Not finished writing until August 6th where the number of COVID list occupants and opt outs has changed, but we are sticking with analysis of numbers as of July 30th
 
 What will the upcoming 2020 NFL season look like?
 
@@ -33,20 +34,21 @@ Compare this to Football Outsider's Adjusted Games Lost (AGL) metric for perspec
 
 Any football fan can imagine what life is like without their starting quarterback (*cough* Steelers, Jets, Panthers *cough*). Whats the probability a starting QB misses a game due to Covid-19? As the virus take about two weeks to pass, an infected QB is likely to miss two games at least.
 
-Lets say each team has a static 53 man roster, resulting in 1696 players. If 70 have the virus at any given week (assuming each player gets counted twice before coming off the list), I project 595 players to have contracted Covid-19 be the end of the season. Wow. I didn't calculate this number until just now. That's pretty bleak. The probability at least one QB will contract Covid-19 is the complement of the probability no QB contracts Covid-19.
+Lets say each team has a static 53 man roster, resulting in 1696 players. If 70 have the virus at any given week (assuming each player gets counted twice before coming off the list), I project 595 players to have contracted Covid-19 be the end of the season. Wow. I didn't calculate this number until just now. That's pretty bleak. 
+The probability at least one QB will contract Covid-19 is the complement of the probability no QB contracts Covid-19.
+
+P(Your QB avoids the COVID list) = 0.65
+P(No QB lands no the COVID list) = 1 - (0.65)^32 = 1.03092 x 10^-6
+
+If I am a betting man, I guarantee at least a single starting QB will miss a game because of COVID (given the above assumptions which are likely incorrect)
 
 #hyperlink AGL metric here: https://www.footballoutsiders.com/stat-analysis/2020/2019-adjusted-games-lost-part-i
 
+The Texans and Chiefs reported earlier than any other team, as their first game occurs four days before any other. After the first round of testing, few players have been added to their COVID reserve lists. Perhaps the structure of an NFL team has reduced risky behavior. May that trend extend to other teams? We will find out shortly.
 
-- test results from Texans / Chiefs, a reason to be optomistic?
+Whats the likelihood of all 256 games being played? How many players must be sick to cancel a game? This number is likely high. Major League Baseball has cancelled several games due to positive COVID tests. However, MLB has the option to schedule double headers later in their season. NFL players oppose Thursday Night Football games for the lack of recovery time between Sunday and Thursday. Even if four days is the absolute minimum between games, the season must be extended to account for cancelled games. I predict the regular season will either end before all 32 teams have played 16 games, or it will be extended before playoffs begin.
 
-
-Whats the likelihood of all 256 games being played?
-- how many players must be sick to cancel a game
-- how hard is it to reschedule a cancelled NFL game?
-- how many coaches must be sick to cancel a game?
-- how bad must the situation be in the US to cancel the season?
-
+It will be fun to revisit these predictions in September.
 
 
 
