@@ -154,3 +154,122 @@ export LDFLAGS='-L/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-
 
 now messing up the LDFLAGS variable causes make to fail. Unsure of what it was set to before
 hmmmm add to lib path?
+
+lets symlink the include directory and try again
+
+symlink worked but getting new error:
+BppDiversity.cpp:183:76: error: conversion from ‘std::vector<unsigned int>’ to non-scalar type ‘std::vector<long unsigned int>’ requested
+                 std::vector<size_t> temp = bpp::SequenceStatistics::MKtable(ingroup, outgroup, *p_code);
+                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I don't really need this function so lets try and comment out
+
+seems to have done it!
+
+`
+make
+make install
+
+cd ../egglib-py-2.1.7
+source activate Python2
+python setup.py build --prefix=/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/
+`
+
+ugh, still cannot find bio++ where the hell was egglib-cpp built?
+symlink include to tmp egglib-py directory?
+
+Nope...
+
+I think since there are warnings but no errors it is saying we dont have it. edit setup.py:
+
+`
+NOBPP = bool(len(stderr))
+#Manual	edit by	Alan Yocca
+#09-10-20
+#bpp is	there but throwing warnings so this code says we don't have it
+NOBPP =	bool(0)
+`
+
+checking Bio++...
+   g++ -pthread -B /mnt/home/yoccaala/miniconda3/envs/Python2/compiler_compat -Wl,--sysroot=/ -I/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/include -c -o testdep.x testdep.cpp
+ ... found
+ 
+ hopefully it really was..
+
+>>> import egglib
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/__init__.py", line 31, in <module>
+    import utils
+  File "/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/utils.py", line 33, in <module>
+    import egglib_binding, tools, fitmodel, data, wrappers, simul
+  File "/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/egglib_binding.py", line 2567, in <module>
+    class BppDiversity(_object):
+  File "/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/egglib_binding.py", line 2579, in BppDiversity
+    __swig_destroy__ = _egglib_binding.delete_BppDiversity
+AttributeError: 'module' object has no attribute 'delete_BppDiversity'
+
+do we need this class? BppDiversity
+could remove....
+
+at this point I think its best to remove everything and retry anyway, so might as well go for commenting things out
+
+commented this out also
+
+  File "/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/egglib_binding.py", line 2728, in <module>
+    BppDiversity_swigregister = _egglib_binding.BppDiversity_swigregister
+AttributeError: 'module' object has no attribute 'BppDiversity_swigregister'
+>>> quit()
+(Python2) [yoccaala@dev-intel14 egglib-py-2.1.7]$ nano +2728 /mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/egglib/egglib_binding.py
+
+seems to be importing fine now?
+
+nope... running selectionStats.py not finding bpp_diversity module....
+
+ugh. lets restart?
+no why is it not finding this module?
+I think its trying to read cpp libraries but they don't have bpp integrated, must have been a problem during compilation of egglib-cpp
+
+so just going to retry the egglib-cpp
+why is it only looking in current directory for the Bpp directory?
+symlinking this directory allowed for an error free compilation.. but maybe that wasn't the right fix
+
+check configure where its looking for them but thats a mess, oh whale go for it, at 11 move on to something different
+
+`
+export CPPFLAGS="-I../../../include"
+./configure --prefix=/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/
+make
+`
+
+then get the same vector type error, try deleting again
+edit lines in setup.py also...
+`
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/home/yoccaala/miniconda3/envs/Python2/lib/python2.7/site-packages/lib/
+python
+>>>import egglib
+Segmentation fault
+`
+
+....lovely
+
+`
+conda install -c conda-forge pytest-faulthandler
+python
+>>>import faaulthandler
+>>>faulthander.enable()
+>>>import egglib
+
+Current thread 0x00002b44fecfdd80 <python> (most recent call first):
+  File "egglib/egglib_binding.py", line 18 in swig_import_helper
+  File "egglib/egglib_binding.py", line 26 in <module>
+  File "egglib/utils.py", line 33 in <module>
+  File "egglib/__init__.py", line 31 in <module>
+  File "<stdin>", line 1 in <module>
+Segmentation fault
+
+
+`
+
+
+
+
